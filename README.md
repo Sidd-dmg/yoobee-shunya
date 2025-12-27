@@ -1,7 +1,7 @@
 # MQTT Gateway Control & Telemetry Specification
 
 This repository documents the **MQTT topics, payload formats, command structures, and telemetry schema**
-for an ESP32-based Gateway system supporting **Manual**, **Automation**, and **Queue** modes.
+for Shunya Irrigation System supporting **Manual**, **Automation**, and **Queue** modes.
 
 ---
 
