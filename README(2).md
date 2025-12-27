@@ -1,11 +1,11 @@
-# 📡 MQTT Gateway Control & Telemetry Specification
+# MQTT Gateway Control & Telemetry Specification
 
 This repository documents the **MQTT topics, payload formats, command structures, and telemetry schema**
 for an ESP32-based Gateway system supporting **Manual**, **Automation**, and **Queue** modes.
 
 ---
 
-## 📥 1. Command Topic (Subscribe)
+## 1. Command Topic (Subscribe)
 
 ### 🔹 Topic Pattern
 ```
@@ -29,15 +29,15 @@ Receives JSON commands to control:
 - **Recommended:** `1`
 
 ### 🔹 Retained
-- ❌ No
+-  No
 
 ---
 
-## 🧾 1.1 Mode Change Commands
+## 1.1 Mode Change Commands
 
 Switch between **Manual**, **Automation**, and **Queue** modes.
 
-### ▶️ Basic Mode Change
+### Basic Mode Change
 ```json
 { "mode": 0 }
 ```
@@ -50,7 +50,7 @@ Switch between **Manual**, **Automation**, and **Queue** modes.
 
 ---
 
-### ▶️ Advanced Mode Change
+### Advanced Mode Change
 ```json
 {
   "mode": 1,
@@ -62,15 +62,15 @@ Switch between **Manual**, **Automation**, and **Queue** modes.
 #### Parameters
 | Field | Type | Required | Description |
 |------|------|----------|-------------|
-| mode | Integer (0–2) | ✅ | Operation mode |
-| transition | String | ❌ | immediate / graceful (default: immediate) |
-| auto_save | Boolean | ❌ | Save mode to EEPROM (default: false) |
+| mode | Integer (0–2) | Yes | Operation mode |
+| transition | String | No | immediate / graceful (default: immediate) |
+| auto_save | Boolean | No | Save mode to EEPROM (default: false) |
 
 ---
 
-## 🔌 1.2 Manual Mode Commands (Mode = 0)
+## 1.2 Manual Mode Commands (Mode = 0)
 
-### ▶️ Individual Relay Control
+### Individual Relay Control
 ```json
 {
   "relay1": 1,
@@ -80,12 +80,12 @@ Switch between **Manual**, **Automation**, and **Queue** modes.
 }
 ```
 
-### ▶️ All Relays ON
+### All Relays ON
 ```json
 { "all": 1 }
 ```
 
-### ▶️ All Relays OFF
+### All Relays OFF
 ```json
 { "all": 0 }
 ```
@@ -98,11 +98,11 @@ Switch between **Manual**, **Automation**, and **Queue** modes.
 
 ---
 
-## 🌡️ 1.3 Automation Mode Configuration (Mode = 1)
+## 1.3 Automation Mode Configuration (Mode = 1)
 
 Configure **temperature and humidity-based automation** rules.
 
-### ▶️ Single Node Configuration
+### Single Node Configuration
 ```json
 {
   "automation": {
@@ -118,7 +118,7 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-### ▶️ Multi-Node Configuration
+### Multi-Node Configuration
 ```json
 {
   "automation": {
@@ -152,7 +152,7 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-### 🔧 Automation Parameters
+### Automation Parameters
 | Field | Description |
 |------|-------------|
 | node1–node4 | Sensor node identifier |
@@ -161,7 +161,7 @@ Configure **temperature and humidity-based automation** rules.
 | humidity.min / humidity.max | Humidity thresholds (%) |
 | hysteresis | Prevents rapid toggling |
 
-### 🧠 Automation Logic
+### Automation Logic
 - **Relay ON** if  
   `temperature > temp.max` **OR** `humidity > humidity.max`
 - **Relay OFF** if  
@@ -170,9 +170,9 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-## ⏱️ 1.4 Queue Mode Configuration (Mode = 2)
+##  1.4 Queue Mode Configuration (Mode = 2)
 
-### ▶️ Basic Queue
+### Basic Queue
 ```json
 {
   "queue": {
@@ -188,7 +188,7 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-### ▶️ Queue with Delays
+### Queue with Delays
 ```json
 {
   "queue": {
@@ -208,7 +208,7 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-### 🔧 Queue Parameters
+### Queue Parameters
 | Field | Description |
 |------|-------------|
 | loop | Repeat queue indefinitely |
@@ -218,7 +218,7 @@ Configure **temperature and humidity-based automation** rules.
 | duration | Relay ON time (seconds) |
 | delay | Wait without relay action |
 
-### 🔁 Step Execution Flow
+### Step Execution Flow
 1. Turn relay **ON**
 2. Wait for `duration`
 3. Turn relay **OFF**
@@ -227,7 +227,7 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-## ▶️ 1.5 Queue Control Commands
+## 1.5 Queue Control Commands
 
 ```json
 { "queue_control": "pause" }
@@ -245,16 +245,16 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-## 📤 2. Status Topic (Publish)
+## 2. Status Topic (Publish)
 
 ### 🔹 Topic Pattern
 ```
-gateway/{MAC_ADDRESS}/status
+{MAC_ADDRESS}/status
 ```
 
 **Example**
 ```
-gateway/A0B1C2D3E4F5/status
+A0B1C2D3E4F5/status
 ```
 
 ### 🔹 Publish Interval
@@ -264,13 +264,13 @@ gateway/A0B1C2D3E4F5/status
 - `0` or `1`
 
 ### 🔹 Retained
-- ✅ Yes (recommended)
+-  Yes (recommended)
 
 ---
 
-## 📊 Status Payload Examples
+##  Status Payload Examples
 
-### ▶️ Manual Mode
+###  Manual Mode
 ```json
 {
   "mode": 0,
@@ -285,7 +285,7 @@ gateway/A0B1C2D3E4F5/status
 
 ---
 
-### ▶️ Automation Mode
+### Automation Mode
 ```json
 {
   "mode": 1,
@@ -301,7 +301,7 @@ gateway/A0B1C2D3E4F5/status
 
 ---
 
-### ▶️ Queue Mode
+###  Queue Mode
 ```json
 {
   "mode": 2,
@@ -319,7 +319,7 @@ gateway/A0B1C2D3E4F5/status
 
 ---
 
-### 📑 Status Fields
+###  Status Fields
 | Field | Description |
 |------|-------------|
 | mode | Current mode (0–2) |
@@ -337,16 +337,16 @@ gateway/A0B1C2D3E4F5/status
 
 ---
 
-## 🌡️ 3. Sensor Data Topics (Publish)
+##  3. Sensor Data Topics (Publish)
 
 ### 3.1 Temperature
 ```
-factory/node/{NODE_ID}/temp
+{MAC_ADDRESS}/{NODE_ID}/temp
 ```
 
 **Example**
 ```
-factory/node/1/temp
+A0B1C2D3E4F5/node1/temp
 ```
 
 Payload:
@@ -355,19 +355,20 @@ Payload:
 ```
 
 - QoS: `0`
-- Retained: ✅ Yes
+- Retained: Yes
 - Trigger: Data received from ESP-A
 
 ---
 
 ### 3.2 Humidity
 ```
-factory/node/{NODE_ID}/hum
+
+{MAC_ADDRESS}/{NODE_ID}/hum
 ```
 
 **Example**
 ```
-factory/node/1/hum
+A0B1C2D3E4F5/node1//hum
 ```
 
 Payload:
@@ -376,9 +377,9 @@ Payload:
 ```
 
 - QoS: `0`
-- Retained: ✅ Yes
+- Retained: Yes
 - Trigger: Data received from ESP-A
 
 ---
 
-## ✅ End of Specification
+## End of Specification
