@@ -368,7 +368,7 @@ Payload:
 
 **Example**
 ```
-A0B1C2D3E4F5/node1//hum
+A0B1C2D3E4F5/node1/hum
 ```
 
 Payload:
