@@ -382,4 +382,3 @@ Payload:
 
 ---
 
-## End of Specification
