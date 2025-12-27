@@ -264,7 +264,7 @@ A0B1C2D3E4F5/status
 - `0` or `1`
 
 ### 🔹 Retained
--  Yes (recommended)
+-  Yes
 
 ---
 
