@@ -106,12 +106,18 @@ Configure **temperature and humidity-based automation** rules.
 ```json
 {
   "automation": {
-    "node1": {
-      "relay": 1,
-      "temp": { "min": 26.0, "max": 33.0 },
-      "humidity": { "min": 26.0, "max": 70.0 },
-      "hysteresis": 1.0
-    }
+    "rules": [
+      {
+        "node": 1,
+        "relay": 1,
+        "control_type": "temperature",
+        "temp": {
+          "min": 26.0,
+          "max": 30.0
+        },
+        "hysteresis": 1.0
+      },
+    ]
   }
 }
 ```
@@ -121,31 +127,82 @@ Configure **temperature and humidity-based automation** rules.
 ### Multi-Node Configuration
 ```json
 {
+  "mode": 1,
   "automation": {
-    "node1": {
-      "relay": 1,
-      "temp": { "min": 26.0, "max": 33.0 },
-      "humidity": { "min": 26.0, "max": 70.0 },
-      "hysteresis": 1.0
-    },
-    "node2": {
-      "relay": 2,
-      "temp": { "min": 25.0, "max": 30.0 },
-      "humidity": { "min": 30.0, "max": 65.0 },
-      "hysteresis": 0.5
-    },
-    "node3": {
-      "relay": 3,
-      "temp": { "min": 24.0, "max": 32.0 },
-      "humidity": { "min": 35.0, "max": 75.0 },
-      "hysteresis": 2.0
-    },
-    "node4": {
-      "relay": 4,
-      "temp": { "min": 27.0, "max": 35.0 },
-      "humidity": { "min": 40.0, "max": 80.0 },
-      "hysteresis": 1.5
-    }
+    "rules": [
+      {
+        "node": 1,
+        "relay": 1,
+        "control_type": "temperature",
+        "temp": {
+          "min": 26.0,
+          "max": 30.0
+        },
+        "hysteresis": 1.0
+      },
+      {
+        "node": 1,
+        "relay": 2,
+        "control_type": "humidity",
+        "humidity": {
+          "min": 40.0,
+          "max": 70.0
+        },
+        "hysteresis": 2.0
+      },
+      {
+        "node": 2,
+        "relay": 3,
+        "control_type": "humidity",
+        "humidity": {
+          "min": 40.0,
+          "max": 70.0
+        },
+        "hysteresis": 2.0
+      },
+      {
+        "node": 2,
+        "relay": 4,
+        "control_type": "both_and",
+        "temp": {
+          "min": 26.0,
+          "max": 30.0
+        },
+        "humidity": {
+          "min": 60.0,
+          "max": 80.0
+        },
+        "hysteresis": 1.0
+      },
+      {
+        "node": 2,
+        "relay": 4,
+        "control_type": "both_and",
+        "temp": {
+          "min": 26.0,
+          "max": 30.0
+        },
+        "humidity": {
+          "min": 60.0,
+          "max": 80.0
+        },
+        "hysteresis": 1.0
+      },
+      {
+        "node": 2,
+        "relay": 5,
+        "control_type": "either_or",
+        "temp": {
+          "min": 26.0,
+          "max": 30.0
+        },
+        "humidity": {
+          "min": 60.0,
+          "max": 80.0
+        },
+        "hysteresis": 1.0
+      }
+    ]
   }
 }
 ```
