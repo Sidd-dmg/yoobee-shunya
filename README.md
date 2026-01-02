@@ -218,12 +218,14 @@ Configure **temperature and humidity-based automation** rules.
 | humidity.min / humidity.max | Humidity thresholds (%) |
 | hysteresis | Prevents rapid toggling |
 
+
 ### Automation Logic
-- **Relay ON** if  
-  `temperature > temp.max` **OR** `humidity > humidity.max`
-- **Relay OFF** if  
-  `temperature < (temp.min - hysteresis)` **AND**  
-  `humidity < (humidity.min - hysteresis)`
+| `control_type` | Behavior |
+|----------------|----------|
+| `"temperature"` | Only temperature controls relay |
+| `"humidity"` | Only humidity controls relay |
+| `"both_and"` | **Both** temp AND humidity must exceed thresholds |
+| `"either_or"` | **Either** temp OR humidity exceeds threshold 
 
 ---
 
