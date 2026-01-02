@@ -127,7 +127,6 @@ Configure **temperature and humidity-based automation** rules.
 ### Multi-Node Configuration
 ```json
 {
-  "mode": 1,
   "automation": {
     "rules": [
       {
