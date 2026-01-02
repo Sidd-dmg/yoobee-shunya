@@ -220,7 +220,7 @@ Configure **temperature and humidity-based automation** rules.
 
 
 ### Automation Logic
-| `control_type` | Behavior |
+| control_type | Behavior |
 |----------------|----------|
 | `"temperature"` | Only temperature controls relay |
 | `"humidity"` | Only humidity controls relay |
