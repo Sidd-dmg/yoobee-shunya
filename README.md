@@ -5,72 +5,117 @@ for Shunya Irrigation System supporting **Manual**, **Automation**, and **Queue*
 
 ---
 
-## 1. Command Topic (Subscribe)
+## Table of Contents
 
-### 🔹 Topic Pattern
+- Connection Information
+- Mode Control
+- Manual Mode Commands
+- Automation Mode Commands
+- Queue Mode Commands
+- Queue Control Commands
+- OTA Update Commands
+- Status Messages
+- Practical Examples
+- Button Functions
+- Important Notes
+- Troubleshooting
+- Version Information
+
+---
+
+## Connection Information
+
+### MQTT Topics
+
+The ESP-B Gateway uses its **MAC address** as the topic prefix.
+
+#### Command Topic (Subscribe)
 ```
 {MAC_ADDRESS}/command
 ```
 
-**Example**
+Example:
 ```
-A0B1C2D3E4F5/command
+A1B2C3D4E5F6/command
 ```
 
-### 🔹 Purpose
-Receives JSON commands to control:
-- Gateway operation mode
-- Relay states
-- Automation rules
-- Queue configuration
+#### Status Topic (Publish)
+```
+{MAC_ADDRESS}/status
+```
 
-### 🔹 QoS
-- `0` or `1`
-- **Recommended:** `1`
+#### Sensor Data Topics (Publish)
+```
+{MAC_ADDRESS}/node{X}/temp
+{MAC_ADDRESS}/node{X}/hum
+```
 
-### 🔹 Retained
--  No
+Example:
+```
+A1B2C3D4E5F6/node1/temp → 25.3
+A1B2C3D4E5F6/node1/hum  → 55.2
+```
+
+#### OTA Status Topic
+```
+{MAC_ADDRESS}/ota/status
+```
 
 ---
 
-## 1.1 Mode Change Commands
+## Mode Control
 
-Switch between **Manual**, **Automation**, and **Queue** modes.
+The ESP-B Gateway operates in three modes.  
+All mode changes are automatically saved to EEPROM.
 
-### Basic Mode Change
-```json
-{ "mode": 0 }
-```
+| Mode | Value |
+|----|----|
+| Manual | 0 |
+| Automation | 1 |
+| Queue | 2 |
 
-| Mode | Description |
-|------|-------------|
-| 0 | Manual Mode |
-| 1 | Automation Mode |
-| 2 | Queue Mode |
-
----
-
-### Advanced Mode Change
+### Switch to Manual Mode
 ```json
 {
-  "mode": 1,
-  "transition": "graceful",
-  "auto_save": true
+  "mode": 0
 }
 ```
 
-#### Parameters
-| Field | Type | Required | Description |
-|------|------|----------|-------------|
-| mode | Integer (0–2) | Yes | Operation mode |
-| transition | String | No | immediate / graceful (default: immediate) |
-| auto_save | Boolean | No | Save mode to EEPROM (default: false) |
+- Stops automation and queue
+- Preserves relay states from EEPROM
+- Allows direct relay control
 
 ---
 
-## 1.2 Manual Mode Commands (Mode = 0)
+### Switch to Automation Mode
+```json
+{
+  "mode": 1
+}
+```
 
-### Individual Relay Control
+- Turns OFF all relays initially
+- Uses automation rules
+- Requires sensor data from paired nodes
+
+---
+
+### Switch to Queue Mode
+```json
+{
+  "mode": 2
+}
+```
+
+- Turns OFF all relays initially
+- Executes timed relay sequences
+- Supports looping and delays
+
+---
+
+## Manual Mode Commands
+
+### Control Individual Relays
 ```json
 {
   "relay1": 1,
@@ -80,51 +125,53 @@ Switch between **Manual**, **Automation**, and **Queue** modes.
 }
 ```
 
-### All Relays ON
-```json
-{ "all": 1 }
-```
-
-### All Relays OFF
-```json
-{ "all": 0 }
-```
-
-#### Parameters
-| Field | Description |
-|------|-------------|
-| relay1–relay4 | `0` = OFF, `1` = ON |
-| all | `0` = All OFF, `1` = All ON |
-
----
-
-## 1.3 Automation Mode Configuration (Mode = 1)
-
-Configure **temperature and humidity-based automation** rules.
-
-### Single Node Configuration
+### Turn All Relays ON
 ```json
 {
-  "automation": {
-    "rules": [
-      {
-        "node": 1,
-        "relay": 1,
-        "control_type": "temperature",
-        "temp": {
-          "min": 26.0,
-          "max": 30.0
-        },
-        "hysteresis": 1.0
-      },
-    ]
-  }
+  "all": 1
 }
 ```
 
+### Turn All Relays OFF
+```json
+{
+  "all": 0
+}
+```
+
+### Mixed Control
+```json
+{
+  "all": 0,
+  "relay1": 1,
+  "relay3": 1
+}
+```
+
+> Individual relay commands override the `all` command.
+
 ---
 
-### Multi-Node Configuration
+## Automation Mode Commands
+
+### Rule Structure
+```json
+{
+  "node": 1,
+  "relay": 1,
+  "temp": {
+    "min": 25.0,
+    "max": 30.0
+  },
+  "humidity": {
+    "min": 40.0,
+    "max": 70.0
+  },
+  "logic": "AND | OR"
+}
+```
+
+### Single Temperature Rule
 ```json
 {
   "automation": {
@@ -132,133 +179,90 @@ Configure **temperature and humidity-based automation** rules.
       {
         "node": 1,
         "relay": 1,
-        "control_type": "temperature",
         "temp": {
-          "min": 26.0,
+          "min": 25.0,
           "max": 30.0
-        },
-        "hysteresis": 1.0
-      },
-      {
-        "node": 1,
-        "relay": 2,
-        "control_type": "humidity",
-        "humidity": {
-          "min": 40.0,
-          "max": 70.0
-        },
-        "hysteresis": 2.0
-      },
-      {
-        "node": 2,
-        "relay": 3,
-        "control_type": "humidity",
-        "humidity": {
-          "min": 40.0,
-          "max": 70.0
-        },
-        "hysteresis": 2.0
-      },
-      {
-        "node": 2,
-        "relay": 4,
-        "control_type": "both_and",
-        "temp": {
-          "min": 26.0,
-          "max": 30.0
-        },
-        "humidity": {
-          "min": 60.0,
-          "max": 80.0
-        },
-        "hysteresis": 1.0
-      },
-      {
-        "node": 2,
-        "relay": 4,
-        "control_type": "both_and",
-        "temp": {
-          "min": 26.0,
-          "max": 30.0
-        },
-        "humidity": {
-          "min": 60.0,
-          "max": 80.0
-        },
-        "hysteresis": 1.0
-      },
-      {
-        "node": 2,
-        "relay": 5,
-        "control_type": "either_or",
-        "temp": {
-          "min": 26.0,
-          "max": 30.0
-        },
-        "humidity": {
-          "min": 60.0,
-          "max": 80.0
-        },
-        "hysteresis": 1.0
+        }
       }
     ]
   }
 }
 ```
 
+### Temperature + Humidity (AND)
+```json
+{
+  "automation": {
+    "rules": [
+      {
+        "node": 1,
+        "relay": 1,
+        "temp": {
+          "min": 25.0,
+          "max": 30.0
+        },
+        "humidity": {
+          "min": 40.0,
+          "max": 70.0
+        },
+        "logic": "AND"
+      }
+    ]
+  }
+}
+```
+
+### Clear All Automation Rules
+```json
+{
+  "automation": {
+    "clear": true
+  }
+}
+```
+
 ---
 
-### Automation Parameters
-| Field | Description |
-|------|-------------|
-| node1–node4 | Sensor node identifier |
-| relay | Relay number (1–4) |
-| temp.min / temp.max | Temperature thresholds (°C) |
-| humidity.min / humidity.max | Humidity thresholds (%) |
-| hysteresis | Prevents rapid toggling |
+## Queue Mode Commands
 
+### Queue Structure
+```json
+{
+  "queue": {
+    "loop": true,
+    "loop_delay": 3600,
+    "auto_start": true,
+    "steps": [
+      { "relay": 1, "duration": 300 },
+      { "delay": 120 },
+      { "relay": 2, "duration": 450 }
+    ]
+  }
+}
+```
 
-### Automation Logic
-| control_type | Behavior |
-|----------------|----------|
-| `"temperature"` | Only temperature controls relay |
-| `"humidity"` | Only humidity controls relay |
-| `"both_and"` | **Both** temp AND humidity must exceed thresholds |
-| `"either_or"` | **Either** temp OR humidity exceeds threshold 
-
----
-
-##  1.4 Queue Mode Configuration (Mode = 2)
-
-### Basic Queue
+### Simple Sequential Queue
 ```json
 {
   "queue": {
     "loop": false,
     "steps": [
-      { "relay": 1, "duration": 30 },
-      { "relay": 2, "duration": 20 },
-      { "relay": 3, "duration": 15 }
+      { "relay": 1, "duration": 10 },
+      { "relay": 2, "duration": 15 }
     ]
   }
 }
 ```
 
----
-
-### Queue with Delays
+### Switch to Queue Mode and Configure
 ```json
 {
+  "mode": 2,
   "queue": {
     "loop": true,
-    "loop_delay": 10,
     "steps": [
       { "relay": 1, "duration": 30 },
-      { "delay": 5 },
-      { "relay": 2, "duration": 20 },
-      { "delay": 3 },
-      { "relay": 3, "duration": 15 },
-      { "relay": 4, "duration": 25 }
+      { "relay": 2, "duration": 30 }
     ]
   }
 }
@@ -266,177 +270,121 @@ Configure **temperature and humidity-based automation** rules.
 
 ---
 
-### Queue Parameters
-| Field | Description |
-|------|-------------|
-| loop | Repeat queue indefinitely |
-| loop_delay | Delay between loops (seconds) |
-| steps | Array (max 20 steps) |
-| relay | Relay number (1–4) |
-| duration | Relay ON time (seconds) |
-| delay | Wait without relay action |
+## Queue Control Commands
 
-### Step Execution Flow
-1. Turn relay **ON**
-2. Wait for `duration`
-3. Turn relay **OFF**
-4. Move to next step
-5. Repeat if `loop = true`
+| Action | Payload |
+|------|---------|
+| Pause | `{ "queue_control": "pause" }` |
+| Resume | `{ "queue_control": "resume" }` |
+| Stop | `{ "queue_control": "stop" }` |
+| Restart | `{ "queue_control": "restart" }` |
+| Enable Auto-Start | `{ "queue_control": "enable_autostart" }` |
+| Disable Auto-Start | `{ "queue_control": "disable_autostart" }` |
 
 ---
 
-## 1.5 Queue Control Commands
+## OTA Update Commands
 
+### Check for Updates
 ```json
-{ "queue_control": "pause" }
-{ "queue_control": "resume" }
-{ "queue_control": "stop" }
-{ "queue_control": "restart" }
+{
+  "ota_check": true
+}
 ```
 
-| Command | Description |
-|--------|-------------|
-| pause | Pause queue |
-| resume | Resume queue |
-| stop | Stop queue & turn off relays |
-| restart | Restart from step 1 |
+### Perform OTA Update
+```json
+{
+  "ota_update": true
+}
+```
+
+⚠ Device will reboot and remain offline for 30–60 seconds.
 
 ---
 
-## 2. Status Topic (Publish)
+## Status Messages
 
-### 🔹 Topic Pattern
-```
-{MAC_ADDRESS}/status
-```
-
-**Example**
-```
-A0B1C2D3E4F5/status
-```
-
-### 🔹 Publish Interval
-- Every **10 seconds**
-
-### 🔹 QoS
-- `0` or `1`
-
-### 🔹 Retained
--  Yes
-
----
-
-##  Status Payload Examples
-
-###  Manual Mode
+### Manual Mode Status
 ```json
 {
   "mode": 0,
   "mode_name": "manual",
-  "relays": [true, false, true, false],
-  "nodes": [
-    { "id": 1, "temp": 28.5, "hum": 65.2, "active": true },
-    { "id": 2, "temp": 27.3, "hum": 62.8, "active": true }
-  ]
+  "firmware_version": "1.0.0",
+  "relays": [true, false, true, false]
 }
 ```
 
----
-
-### Automation Mode
+### Automation Mode Status
 ```json
 {
   "mode": 1,
   "mode_name": "automation",
-  "relays": [true, false, false, true],
-  "nodes": [
-    { "id": 1, "temp": 28.5, "hum": 65.2, "active": true },
-    { "id": 2, "temp": 27.3, "hum": 62.8, "active": true },
-    { "id": 3, "temp": 29.1, "hum": 68.5, "active": true }
-  ]
+  "relays": [true, false, false, false]
 }
 ```
 
----
-
-###  Queue Mode
+### Queue Mode Status
 ```json
 {
   "mode": 2,
   "mode_name": "queue",
-  "relays": [true, false, false, false],
   "queue_running": true,
-  "queue_paused": false,
-  "current_step": 2,
-  "total_steps": 5,
-  "nodes": [
-    { "id": 1, "temp": 28.5, "hum": 65.2, "active": true }
-  ]
+  "current_step": 1,
+  "total_steps": 4
 }
 ```
 
 ---
 
-###  Status Fields
-| Field | Description |
-|------|-------------|
-| mode | Current mode (0–2) |
-| mode_name | manual / automation / queue |
-| relays | Relay states |
-| queue_running | Queue executing |
-| queue_paused | Queue paused |
-| current_step | Active step |
-| total_steps | Total steps |
-| nodes | Sensor nodes |
-| id | Node ID |
-| temp | Temperature (°C) |
-| hum | Humidity (%) |
-| active | Seen in last 60s |
+## Button Functions
+
+| Press Duration | Function |
+|---------------|---------|
+| 1 second | Enable pairing mode |
+| 5 seconds | Reset WiFi |
+| 10 seconds | Clear paired nodes |
+| 20 seconds | Factory reset |
 
 ---
 
-##  3. Sensor Data Topics (Publish)
+## Important Notes
 
-### 3.1 Temperature
-```
-{MAC_ADDRESS}/{NODE_ID}/temp
-```
-
-**Example**
-```
-A0B1C2D3E4F5/node1/temp
-```
-
-Payload:
-```
-28.5
-```
-
-- QoS: `0`
-- Retained: Yes
-- Trigger: Data received from ESP-A
+- All configurations stored in EEPROM
+- Automation has 3-second rate limiting
+- Nodes inactive after 60 seconds
+- Queue auto-starts if enabled
+- Mode changes saved immediately
 
 ---
 
-### 3.2 Humidity
-```
+## Troubleshooting
 
-{MAC_ADDRESS}/{NODE_ID}/hum
-```
+### Relay Not Responding
+1. Ensure mode is Manual (`mode: 0`)
+2. Verify relay number (1–4)
+3. Check MQTT connection
+4. Review serial logs
 
-**Example**
-```
-A0B1C2D3E4F5/node1/hum
-```
+### Automation Not Working
+1. Node paired and active
+2. Mode set to Automation (`mode: 1`)
+3. Rules configured
+4. Sensor data arriving
 
-Payload:
-```
-65.2
-```
-
-- QoS: `0`
-- Retained: Yes
-- Trigger: Data received from ESP-A
+### Queue Not Starting
+1. Check `auto_start`
+2. Ensure steps are defined
+3. Mode must be Queue (`mode: 2`)
 
 ---
 
+## Version Information
+
+- Firmware Version: via status message
+- GitHub Repository: [ADD URL]
+- OTA Firmware URL: [ADD firmware.bin URL]
+
+---
+
+End of documentation.
