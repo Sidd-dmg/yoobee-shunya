@@ -1,6 +1,7 @@
 # ESP-B Gateway – MQTT Command & Control Documentation
 
 This document contains **all MQTT topics, commands, payloads, scenarios, and examples** supported by the ESP-B Gateway.
+
 ---
 
 ## Table of Contents
