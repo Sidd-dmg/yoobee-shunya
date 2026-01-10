@@ -56,12 +56,7 @@ A1B2C3D4E5F6/node1/temp → 25.3
 A1B2C3D4E5F6/node1/hum  → 55.2
 ```
 
-### OTA Status Topic (Publish)
-```
-{MAC_ADDRESS}/ota/status
-```
 
----
 
 ## Mode Control
 
@@ -467,17 +462,6 @@ Description:
 
 ---
 
-## OTA Update Commands
-
-### Check for Updates
-```json
-{ "ota_check": true }
-```
-
-### Perform OTA Update
-```json
-{ "ota_update": true }
-```
 
 ---
 
