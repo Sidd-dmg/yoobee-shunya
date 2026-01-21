@@ -46,14 +46,12 @@ A1B2C3D4E5F6/status
 
 ### Sensor Data Topics (Publish)
 ```
-{MAC_ADDRESS}/node{X}/temp
-{MAC_ADDRESS}/node{X}/hum
+{MAC_ADDRESS}/node{X}
 ```
 
 Example:
 ```
-A1B2C3D4E5F6/node1/temp → 25.3
-A1B2C3D4E5F6/node1/hum  → 55.2
+A1B2C3D4E5F6/node1
 ```
 
 
@@ -472,12 +470,37 @@ Description:
 {
   "mode": 0,
   "mode_name": "manual",
-  "firmware_version": "1.0.0",
+  "timestamp": "2024-12-19 14:30:45",
+  "uptime_ms": 3456789,
+  "wifi_connected": true,
+  "wifi_rssi": -45,
+  "wifi_channel": 11,
+  "wifi_ssid": "MyWiFi",
+  "ip_address": "192.168.1.100",
+  "mqtt_connected": true,
+  "pairing_mode": false,
+  "paired_nodes": 2,
   "relays": [true, false, true, false],
   "nodes": [
-    { "id": 1, "temp": 25.3, "hum": 55.2, "active": true },
-    { "id": 2, "temp": 26.1, "hum": 58.7, "active": true }
-  ]
+    {
+      "id": 1,
+      "active": true,
+      "temperature": 25.3,
+      "humidity": 65.2,
+      "last_seen_ms": 3450000,
+      "mac": "AA:BB:CC:DD:EE:01"
+    },
+    {
+      "id": 2,
+      "active": true,
+      "temperature": 26.1,
+      "humidity": 62.8,
+      "last_seen_ms": 3451000,
+      "mac": "AA:BB:CC:DD:EE:02"
+    }
+  ],
+  "ota_available": false,
+  "firmware_version": "1.0.0"
 }
 ```
 
@@ -488,11 +511,63 @@ Description:
 {
   "mode": 1,
   "mode_name": "automation",
-  "firmware_version": "1.0.0",
-  "relays": [true, false, false, false],
+  "timestamp": "2024-12-19 14:35:20",
+  "uptime_ms": 3756789,
+  "wifi_connected": true,
+  "wifi_rssi": -47,
+  "wifi_channel": 11,
+  "wifi_ssid": "MyWiFi",
+  "ip_address": "192.168.1.100",
+  "mqtt_connected": true,
+  "pairing_mode": false,
+  "paired_nodes": 2,
+  "relays": [true, false, true, false],
   "nodes": [
-    { "id": 1, "temp": 31.2, "hum": 52.3, "active": true }
-  ]
+    {
+      "id": 1,
+      "active": true,
+      "temperature": 28.5,
+      "humidity": 70.3,
+      "last_seen_ms": 3750000,
+      "mac": "AA:BB:CC:DD:EE:01"
+    },
+    {
+      "id": 2,
+      "active": true,
+      "temperature": 24.2,
+      "humidity": 58.1,
+      "last_seen_ms": 3751000,
+      "mac": "AA:BB:CC:DD:EE:02"
+    }
+  ],
+  "automation_rules": [
+    {
+      "node_id": 1,
+      "relay_id": 1,
+      "temp_min": 20.0,
+      "temp_max": 30.0,
+      "hum_min": 40.0,
+      "hum_max": 80.0,
+      "use_temp": true,
+      "use_hum": true,
+      "logic": "OR",
+      "last_state": true
+    },
+    {
+      "node_id": 2,
+      "relay_id": 4,
+      "temp_min": 18.0,
+      "temp_max": 25.0,
+      "hum_min": 30.0,
+      "hum_max": 70.0,
+      "use_temp": true,
+      "use_hum": false,
+      "logic": "AND",
+      "last_state": true
+    }
+  ],
+  "ota_available": false,
+  "firmware_version": "1.0.0"
 }
 ```
 
@@ -503,19 +578,50 @@ Description:
 {
   "mode": 2,
   "mode_name": "queue",
-  "firmware_version": "1.0.0",
-  "relays": [true, false, false, false],
-  "queue_running": true,
-  "queue_paused": false,
-  "queue_auto_start": true,
-  "current_step": 1,
-  "total_steps": 4,
+  "timestamp": "2024-12-19 14:40:15",
+  "uptime_ms": 4056789,
+  "wifi_connected": true,
+  "wifi_rssi": -46,
+  "wifi_channel": 11,
+  "wifi_ssid": "MyWiFi",
+  "ip_address": "192.168.1.100",
+  "mqtt_connected": true,
+  "pairing_mode": false,
+  "paired_nodes": 1,
+  "relays": [true, false, true, false],
   "nodes": [
-    { "id": 1, "temp": 24.8, "hum": 52.3, "active": true }
-  ]
+    {
+      "id": 1,
+      "active": true,
+      "temperature": 25.8,
+      "humidity": 64.5,
+      "last_seen_ms": 4050000,
+      "mac": "AA:BB:CC:DD:EE:01"
+    }
+  ],
+  "queue": {
+    "running": true,
+    "paused": false,
+    "current_step": 2,
+    "total_steps": 5,
+    "loop_enabled": true,
+    "auto_start": true
+  },
+  "ota_available": false,
+  "firmware_version": "1.0.0"
 }
 ```
+### Sensor Data
+```json
+{
+  "node_id": 1,
+  "temperature": 25.3,
+  "humidity": 65.2,
+  "node_uptime_ms": 123456,
+  "timestamp": "2024-12-19 14:30:45"
+}
 
+```
 ---
 
 ## Button Functions
