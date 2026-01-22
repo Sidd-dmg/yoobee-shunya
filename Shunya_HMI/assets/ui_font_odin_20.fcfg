@@ -1,0 +1,16 @@
+{
+  "codename": "odin_20",
+  "ttf_path": "/assets/OdinRounded-Yd82.ttf",
+  "bin_path": "/assets\\ui_font_odin_20.bin",
+  "c_path": "/assets\\ui_font_odin_20.c",
+  "cfg_path": "/assets\\ui_font_odin_20.fcfg",
+  "size": 20,
+  "bpp": 1,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}
