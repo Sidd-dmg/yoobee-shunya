@@ -1184,4 +1184,3 @@ Nodes 3 and 4 are available via MQTT only.
 | `event_log{}` | All | SPIFFS log info and pending count |
 | `ota_available` | All | `1` if update available, `0` if not |
 | `firmware_version` | All | Current firmware version string |
-```
