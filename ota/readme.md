@@ -174,8 +174,8 @@ Automation rules monitor paired sensor nodes and control relays based on
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `node` | ✅ | Node ID to monitor (1–4) |
-| `relay` | ✅ | Relay to control (1–4) |
+| `node` | Yes | Node ID to monitor (1–4) |
+| `relay` | Yes | Relay to control (1–4) |
 | `temp` | Optional | Temperature thresholds `{"min": X, "max": Y}` |
 | `humidity` | Optional | Humidity thresholds `{"min": X, "max": Y}` |
 | `logic` | Optional | `"OR"` (default) or `"AND"` — applies when both temp and humidity are set |
@@ -465,20 +465,12 @@ Then start it manually:
 Hybrid mode runs **Automation** and **Queue** at the same time.  
 The final relay state is determined by combining both systems using a **logic rule**.
 
-### Logic Types
-
-| Logic | Relay turns ON when... |
-|-------|------------------------|
-| `"OR"` | **Either** automation OR queue wants the relay ON |
-| `"AND"` | **Both** automation AND queue want the relay ON |
-
 ---
 
-### Example 1 — OR Logic
+### Example 1
 ```json
 {
   "hybrid": {
-    "logic": "OR",
     "automation": {
       "rules": [
         {
@@ -501,42 +493,6 @@ The final relay state is determined by combining both systems using a **logic ru
 }
 ```
 
----
-
-### Example 2 — AND Logic (Safety Interlock)
-```json
-{
-  "hybrid": {
-    "logic": "AND",
-    "automation": {
-      "rules": [
-        {
-          "node": 1,
-          "relay": 1,
-          "temp": {"min": 20, "max": 28}
-        }
-      ]
-    },
-    "queue": {
-      "loop": true,
-      "steps": [
-        {"relay": 1, "duration": 120},
-        {"delay": 600}
-      ]
-    }
-  }
-}
-```
-
----
-
-### Change Only the Logic Type
-```json
-{"hybrid": {"logic": "OR"}}
-```
-```json
-{"hybrid": {"logic": "AND"}}
-```
 
 ---
 
